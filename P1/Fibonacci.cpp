@@ -1,3 +1,5 @@
+/*用double类型计算的时候，前20个数较为轻松，但是到100个数据就比较缓慢，因此应该采用大数计算*/
+
 #include <iostream>
 #include <iomanip>
 using namespace std;
