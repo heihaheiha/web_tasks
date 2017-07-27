@@ -1,0 +1,43 @@
+<div style="text-align:center;margin:10px auto;">
+<h1>欢迎来到留言板查看留言</h1>
+选择查询类型：<br>
+<form action="/posts" method="GET">
+    请输入查询的id<br>
+	<input type="text" name="find_id"><br><br>
+    作者查询<br><br>
+	请输入查询的作者<br>
+	<input type="text" name="find_author"><br><br>
+	<input type="submit" name="submit" value="提交">
+</form>
+<form action="/" method="GET">
+  <input type="submit" name="back" value="back">
+</form>
+<table border="1">
+	<tr>
+	  <th>留言ID</th>
+	  <th>留言作者</th>
+      <th>留言内容</th>
+	  <th>留言时间</th>
+	  <th>delete message</th>
+	</tr>
+<%  len = $arr.length
+	i = 0
+    len.times{
+    id = $arr[i]["id"]
+    mess1 = Hash["id" => id]
+%>
+	<tr>
+	<form action="/delete/<%= $arr[i]["id"] %>" method="GET">
+	  <td><%= $arr[len-i-1]['id'] %></td>
+	  <td><%= $arr[len-i-1]['author'] %></td>
+	  <td><%= $arr[len-i-1]['content'] %></td>
+	  <td><%= $arr[len-i-1]['time'] %></td>
+	  <td><input type="submit" name="submit" value="delete"></td>
+	</form>
+	</tr>
+<%   
+	i += 1 
+    }
+%>
+</table>
+</div>
