@@ -3,9 +3,10 @@ require 'mysql2'
 require 'sinatra'
 require 'active_record'
 require 'yaml'
+require 'digest/sha1'
 dbconfig = YAML::load(File.open('db/database.yml'))
 ActiveRecord::Base.establish_connection(dbconfig)
-#创建表
+
 ActiveRecord::Schema.define do
   #drop_table :users
   if !table_exists? :users
@@ -43,7 +44,7 @@ configure do
   infomations = Message.all
   users = User.all
 end
-#zhuce
+
 get '/signup' do
   erb :register
 end
@@ -55,11 +56,13 @@ post '/signup' do
     "name = " << session['name'].inspect
   	session['name'] = userSign_name
   	@user1 = User.new(username: userSign_name, password: userSign_pass)
+    puts Digest::SHA1.hexdigest(userSign_pass)
     @user1.valid?
     if @user1.errors.size != 0
       erb :register
     else 
       @user1.save
+      @user.update(password: Digest::SHA1.hexdigest(userSign_pass))
       redirect '/'
     end
   else
@@ -67,7 +70,7 @@ post '/signup' do
     erb :error
   end
 end
-#登陆，若已经登陆了，就不能再次登陆，除非退出登录
+
 get '/login' do
   if session['name'] == nil
     erb :login
@@ -80,14 +83,13 @@ end
 post '/login' do
   userLogin_name = params[:userLoginName]
   userLogin_pass = params[:userLoginPass]
+  users = User.all
   loginUser = User.find_by(username: userLogin_name)
-  #判断是否用户名存在
   if !loginUser
     @language = "the username hasn't existed"
     erb :error 
   else
-    #判断密码是否相等
-    if loginUser.password == userLogin_pass
+    if loginUser.password == Digest::SHA1.hexdigest(userLogin_pass)
       "userLogin_name =" << session['name'].inspect
       session['name'] = userLogin_name
       redirect '/'
@@ -101,7 +103,7 @@ end
 get '/' do
   erb :inquery
 end
-#查看个人信息
+
 get '/look' do
   if session['name'] != nil
     @arr =[]
@@ -116,7 +118,7 @@ get '/look' do
     redirect to '/login'
   end
 end
-#查看所有人的留言信息，并且根据不同情况进行匹配
+
 get '/posts' do
   if session['name'] != nil
     id_t = params[:find_id].to_s
@@ -207,13 +209,14 @@ end
 get '/deleteau/:author' do
   if session['name'] != nil
     author_s = params[:author].to_s
+    puts author_s
     user = User.find_by(username: author_s)
     if !user
       @language = "the author name is wrong"
       erb :error
     else
       user.destroy
-      redirect '/'
+      redirect '/posts'
     end
   else 
     redirect to '/login'
@@ -228,7 +231,7 @@ get '/add' do
     redirect to '/login'
   end
 end
-#增加留言
+
 post '/add' do
   user1 = User.find_by(username: session['name'])
   leaveMes_f = params[:content].to_s
@@ -243,8 +246,8 @@ post '/add' do
     redirect '/'
   end
 end
-#退出登录
-post '/back' do
+
+get '/back' do
   session['name'] = nil
   redirect to '/' 
 end
@@ -256,7 +259,7 @@ get '/change' do
     redirect to '/login'
   end
 end
-#更改密码
+
 post '/change' do 
   userLogin_name = params[:userLoginName].to_s
   userOld_pass = params[:userOldPass].to_s
@@ -266,7 +269,7 @@ post '/change' do
     @language = "the username hasn't existed"
     erb :error 
   else
-    if loginUser.password == userOld_pass
+    if loginUser.password == Digest::SHA1.hexdigest(userOld_pass)
       loginUser.update(password: userNew_pass)
       puts loginUser.errors.size
       if loginUser.errors.size != 0
@@ -274,8 +277,9 @@ post '/change' do
         @user1 = loginUser
         erb :changePass
       else
+        loginUser.update(password: Digest::SHA1.hexdigest(userNew_pass))
         session['name'] = userLogin_name
-        @language = "xiugaichenggong"
+        @language = "modify password successfully"
         erb :error
       end
     else
