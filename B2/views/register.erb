@@ -1,0 +1,24 @@
+<html><body>
+<div style="text-align:center;margin:120px auto;">
+  <% if @user1 != nil and @user1.errors.any? %>
+  <div id="error_explanation">
+  <ul>
+    <% @user1.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+
+<form action="/signup" method="POST">
+  <b>UserName:</b>
+  <input type="text" name="userSignName"/>
+  <br><br>
+  <b>Passsword:</b>
+  <input type="password" name="userSignPass"/>
+  <br><br>
+  <input type="submit" name="submit" value="register"/>
+</form>
+</div>
+</body></html>
+

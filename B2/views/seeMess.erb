@@ -1,0 +1,42 @@
+<div style="text-align:center;margin:10px auto;">
+<h1>欢迎来到留言板查看留言</h1>
+<form action="/posts" method="GET">
+    请输入查询的id<br>
+	<input type="text" name="find_id"><br><br>
+	请输入查询的作者<br>
+	<input type="text" name="find_author"><br><br>
+	<input type="submit" name="submit" value="提交">
+</form>
+<form action="/" method="GET">
+    <input type="submit" name="back" value="back">
+</form>
+<%= @message %>
+<table border="1">
+	<tr>
+	  <th>留言ID</th>
+	  <th>留言作者</th>
+      <th>留言内容</th>
+	  <th>留言时间</th>
+	  <th>delete message by id</th>
+	  <th>delete message by author</th>
+	  <th>updated</th>
+	</tr>
+<%  len = @arr.length
+	i = 0
+    @arr.length.times{
+%>
+	<tr>
+	  <td><%= @arr[len-i-1].id %></td>
+	  <td><%= @arr[len-i-1].user_id %></td>
+	  <td><%= @arr[len-i-1].content %></td>
+	  <td><%= @arr[len-i-1].created_at %></td>
+	  <td><form action="/deleteid/<%= @arr[len-i-1].id %>" method="GET"><input type="submit" name="submit" value="deleteById"></form></td>
+	  <td><form action="/deleteau/<%= @arr[len-i-1].user_id %>" method="GET"><input type="submit" name="submit" value="deleteByAuthor"></form></td>
+	  <td><form action="/modify/<%= @arr[len-i-1].id %>" method="GET"><input type="submit" name="submit" value="updated"></td></form></td>
+	</tr>
+<%   
+	i += 1 
+    }
+%>
+</table>
+</div>

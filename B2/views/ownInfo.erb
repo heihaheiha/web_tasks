@@ -1,0 +1,37 @@
+<form action="back" method="post">
+  <input type="submit" name="submit" value="tuichu"/>
+</form>
+<form action="change" method="get">
+  <input type="submit" name="submit" value="xiugai"/>
+</form>
+<h2>welcome to you home page</h2>
+<b>your name:</b>
+<%= session['name']%>
+<br><br>
+<b>your messages</b>
+<br><br>
+<b><%= @message %></b>
+<table border="1">
+	<tr>
+	  <th>留言ID</th>
+	  <th>留言作者</th>
+      <th>留言内容</th>
+	  <th>留言时间</th>
+	  <th>updated</th>
+	</tr>
+<%  len = @arr.length
+	i = 0
+    @arr.length.times{
+%>
+	<tr>
+	  <td><%= @arr[len-i-1].id %></td>
+	  <td><%= session['name'] %></td>
+	  <td><%= @arr[len-i-1].content %></td>
+	  <td><%= @arr[len-i-1].created_at %></td>
+	  <td><form action="/modify/<%= @arr[len-i-1].id %>" method="GET"><input type="submit" name="submit" value="updated"></td></form></td>
+	</tr>
+<%   
+	i += 1 
+    }
+%>
+</table>

@@ -1,0 +1,27 @@
+<html><body>
+<div style="text-align:center;margin:120px auto;">
+  <% if @user1 != nil and @user1.errors.any? %>
+  <div id="error_explanation">
+  <ul>
+    <% @user1.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+
+<%= @language %><br>
+<form action="/change" method="POST">
+  <b>UserName:</b>
+  <input type="text" name="userLoginName"/>
+  <br><br>
+  <b>Old Passsword:</b>
+  <input type="password" name="userOldPass"/>
+  <br><br>
+  <b>New Passsword:</b>
+  <input type="password" name="userNewPass"/>
+  <br><br>
+  <input type="submit" name="submit" value="submit"/>
+</form>
+</div>
+</body></html>
