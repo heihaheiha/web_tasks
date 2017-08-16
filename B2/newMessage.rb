@@ -6,7 +6,7 @@ require 'yaml'
 require 'digest/sha1'
 dbconfig = YAML::load(File.open('db/database.yml'))
 ActiveRecord::Base.establish_connection(dbconfig)
-
+#创建表
 ActiveRecord::Schema.define do
   #drop_table :users
   if !table_exists? :users
@@ -41,32 +41,40 @@ end
 
 configure do
   enable :sessions
-  infomations = Message.all
-  users = User.all
 end
 
 get '/signup' do
   erb :register
 end
-
+#注册
 post '/signup' do
-  userSign_name = params[:userSignName]
-  userSign_pass = params[:userSignPass]
-  if !User.find_by(username: userSign_name)
-    "name = " << session['name'].inspect
-  	session['name'] = userSign_name
-  	@user1 = User.new(username: userSign_name, password: userSign_pass)
-    puts Digest::SHA1.hexdigest(userSign_pass)
-    @user1.valid?
-    if @user1.errors.size != 0
+  if session['name'] != nil
+    userSign_name = params[:userSignName]
+    userSign_pass = params[:userSignPass].to_s
+    userSignCon_pass = params[:userSignConPass].to_s  
+    if !User.find_by(username: userSign_name)
+      if userSign_pass.eql?(userSignCon_pass)
+        "name = " << session['name'].inspect
+  	    session['name'] = userSign_name
+  	    @user1 = User.new(username: userSign_name, password: userSign_pass)
+        @user1.valid?
+        if @user1.errors.size != 0
+          erb :register
+        else 
+          @user1.save
+          @user1.update(password: Digest::SHA1.hexdigest(userSign_pass))
+          redirect '/'
+        end
+      else
+        @language = "Two input password must be consistent"
+        erb :register
+      end
+    else
+      @language = "the username has existed"
       erb :register
-    else 
-      @user1.save
-      @user.update(password: Digest::SHA1.hexdigest(userSign_pass))
-      redirect '/'
     end
   else
-    @language = "the username has existed"
+    @language = "you have to login"
     erb :error
   end
 end
@@ -79,31 +87,35 @@ get '/login' do
     erb :error
   end
 end
-
+#登录
 post '/login' do
-  userLogin_name = params[:userLoginName]
-  userLogin_pass = params[:userLoginPass]
-  users = User.all
-  loginUser = User.find_by(username: userLogin_name)
-  if !loginUser
-    @language = "the username hasn't existed"
-    erb :error 
-  else
-    if loginUser.password == Digest::SHA1.hexdigest(userLogin_pass)
-      "userLogin_name =" << session['name'].inspect
-      session['name'] = userLogin_name
-      redirect '/'
+  if session['name'] != nil
+    userLogin_name = params[:userLoginName]
+    userLogin_pass = params[:userLoginPass]
+    loginUser = User.find_by(username: userLogin_name)
+    if !loginUser
+      @language = "the username hasn't existed"
+      erb :error 
     else
-      @language = "the password id wrong"
-      erb :error
+      if loginUser.password == Digest::SHA1.hexdigest(userLogin_pass)
+        "userLogin_name =" << session['name'].inspect
+        session['name'] = userLogin_name
+        redirect '/'
+      else
+        @language = "the password id wrong"
+        erb :error
+      end
     end
+  else
+    @language = "you have to login"
+    erb :error
   end
 end
 
 get '/' do
   erb :inquery
 end
-
+#查看个人信息
 get '/look' do
   if session['name'] != nil
     @arr =[]
@@ -118,7 +130,7 @@ get '/look' do
     redirect to '/login'
   end
 end
-
+#查看所有人的留言
 get '/posts' do
   if session['name'] != nil
     id_t = params[:find_id].to_s
@@ -209,13 +221,14 @@ end
 get '/deleteau/:author' do
   if session['name'] != nil
     author_s = params[:author].to_s
-    puts author_s
     user = User.find_by(username: author_s)
     if !user
       @language = "the author name is wrong"
       erb :error
     else
-      user.destroy
+      user.messages.each do |m|
+        m.destroy
+      end
       redirect '/posts'
     end
   else 
@@ -233,20 +246,25 @@ get '/add' do
 end
 
 post '/add' do
-  user1 = User.find_by(username: session['name'])
-  leaveMes_f = params[:content].to_s
-  message = user1.messages.new(content: leaveMes_f)
-  message.valid?
-  #because the $num is global variable,so when the submit button is on click,it will add one
-  if message.errors.size != 0
-    @language = "the length of content is less than 10"
-    erb :error
+  if session['name'] != nil
+    user1 = User.find_by(username: session['name'])
+    leaveMes_f = params[:content].to_s
+    message = user1.messages.new(content: leaveMes_f)
+    message.valid?
+    #because the $num is global variable,so when the submit button is on click,it will add one
+    if message.errors.size != 0
+      @language = "the length of content is less than 10"
+      erb :error
+    else
+      message.save
+      redirect '/'
+    end
   else
-    message.save
-    redirect '/'
+    @language = "you have to login"
+    erb :error
   end
 end
-
+#退出
 get '/back' do
   session['name'] = nil
   redirect to '/' 
@@ -259,32 +277,36 @@ get '/change' do
     redirect to '/login'
   end
 end
-
+#更改密码
 post '/change' do 
-  userLogin_name = params[:userLoginName].to_s
-  userOld_pass = params[:userOldPass].to_s
-  userNew_pass = params[:userNewPass].to_s
-  loginUser = User.find_by(username: userLogin_name)
-  if !loginUser
-    @language = "the username hasn't existed"
-    erb :error 
-  else
+  if session['name'] != nil
+    userLogin_name = session['name']
+    userOld_pass = params[:userOldPass].to_s
+    userNew_pass = params[:userNewPass].to_s
+    userNewCon_pass = params[:userNewConPass].to_s
+    loginUser = User.find_by(username: userLogin_name)
     if loginUser.password == Digest::SHA1.hexdigest(userOld_pass)
-      loginUser.update(password: userNew_pass)
-      puts loginUser.errors.size
-      if loginUser.errors.size != 0
-        @user1 = User.new
-        @user1 = loginUser
-        erb :changePass
+      if userNew_pass.eql?(userNewCon_pass)  
+        loginUser.update(password: userNew_pass)
+        if loginUser.errors.size != 0
+          @user1 = User.new
+          @user1 = loginUser
+          erb :changePass
+        else
+          loginUser.update(password: Digest::SHA1.hexdigest(userNew_pass))
+          @language = "modify password successfully"
+          erb :error
+        end
       else
-        loginUser.update(password: Digest::SHA1.hexdigest(userNew_pass))
-        session['name'] = userLogin_name
-        @language = "modify password successfully"
-        erb :error
+        @language = "Two input new password must be consistent"
+        erb :changePass
       end
     else
       @language = "the password id wrong"
       erb :changePass
     end
+  else
+    @language = "you have to login"
+    erb :error
   end
 end

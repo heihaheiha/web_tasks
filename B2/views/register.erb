@@ -9,13 +9,16 @@
   </ul>
 </div>
 <% end %>
-
+<b><%= @language %></b><br><br>
 <form action="/signup" method="POST">
   <b>UserName:</b>
   <input type="text" name="userSignName"/>
   <br><br>
   <b>Passsword:</b>
   <input type="password" name="userSignPass"/>
+  <br><br>
+  <b>Confirm Passsword:</b>
+  <input type="password" name="userSignConPass"/>
   <br><br>
   <input type="submit" name="submit" value="register"/>
 </form>

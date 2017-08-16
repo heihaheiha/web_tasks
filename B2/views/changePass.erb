@@ -13,13 +13,16 @@
 <%= @language %><br>
 <form action="/change" method="POST">
   <b>UserName:</b>
-  <input type="text" name="userLoginName"/>
+  <%= session['name'] %>
   <br><br>
   <b>Old Passsword:</b>
   <input type="password" name="userOldPass"/>
   <br><br>
   <b>New Passsword:</b>
   <input type="password" name="userNewPass"/>
+  <br><br>
+  <b>Confirm New Passsword:</b>
+  <input type="password" name="userNewConPass"/>
   <br><br>
   <input type="submit" name="submit" value="submit"/>
 </form>
