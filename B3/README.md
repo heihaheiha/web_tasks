@@ -1,0 +1,134 @@
+﻿数据库表结构
+------
+用户表users
+<table>
+<tr>
+  <th>字段名</th>
+  <th>类型</th>
+  <th>描述</th>
+</tr>
+<tr>
+  <td>id</td>
+  <td>int</td>
+  <td>用户ID</td>
+</tr>
+<tr>
+  <td>name</td>
+  <td>string</td>
+  <td>用户名，并且不能相同</td>
+</tr>
+<tr>
+  <td>password</td>
+  <td>string</td>
+  <td>密码</td>
+</tr>
+</table>
+管理员表admins
+<table>
+<tr>
+  <th>字段名</th>
+  <th>类型</th>
+  <th>描述</th>
+</tr>
+<tr>
+  <td>id</td>
+  <td>int</td>
+  <td>用户ID</td>
+</tr>
+<tr>
+  <td>name</td>
+  <td>string</td>
+  <td>用户名，并且不能相同</td>
+</tr>
+<tr>
+  <td>password</td>
+  <td>string</td>
+  <td>密码</td>
+</tr>
+</table>
+留言表comments
+<table>
+<tr>
+  <th>字段名</th>
+  <th>类型</th>
+  <th>描述</th>
+</tr>
+<tr>
+  <td>id</td>
+  <td>int</td>
+  <td>用户ID</td>
+</tr>
+<tr>
+  <td>user_id</td>
+  <td>string</td>
+  <td>作者</td>
+</tr>
+<tr>
+  <td>admin_id</td>
+  <td>string</td>
+  <td>审查人的ID</td>
+</tr>
+<tr>
+  <td>email</td>
+  <td>string</td>
+  <td>邮箱</td>
+</tr>
+<tr>
+  <td>content</td>
+  <td>string</td>
+  <td>文章内容</td>
+</tr>
+<tr>
+  <td>created_at</td>
+  <td>date</td>
+  <td>书写日期</td>
+</tr>
+<tr>
+  <td>updated_at</td>
+  <td>date</td>
+  <td>更新日期</td>
+</tr>
+<tr>
+  <td>status</td>
+  <td>int</td>
+  <td>状态，用于显示是否被检查</td>
+</tr>
+</table>
+反馈表feedbacks
+<table>
+<tr>
+  <th>字段名</th>
+  <th>类型</th>
+  <th>描述</th>
+</tr>
+<tr>
+  <td>id</td>
+  <td>int</td>
+  <td>用户ID</td>
+</tr>
+<tr>
+  <td>user_id</td>
+  <td>string</td>
+  <td>反馈作者</td>
+</tr>
+<tr>
+  <td>content</td>
+  <td>string</td>
+  <td>反馈的内容</td>
+</tr>
+<tr>
+  <td>created_at</td>
+  <td>date</td>
+  <td>书写日期</td>
+</tr>
+<tr>
+  <td>updated_at</td>
+  <td>date</td>
+  <td>更新日期</td>
+</tr>
+<tr>
+  <td>status</td>
+  <td>int</td>
+  <td>状态，用于显示是否被检查</td>
+</tr>
+</table>
