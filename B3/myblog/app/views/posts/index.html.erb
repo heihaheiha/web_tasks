@@ -1,0 +1,39 @@
+<h1>Article lists</h1>
+<%= link_to 'New article', new_post_path %><br><br>
+
+<select name="post[exchoice]">
+  <option value="title" selected="selected">article's title</option>
+  <option value="author">article's author</option>
+  <option value="date">article's published month</option>
+</select>
+
+<%= form_for :choice, url: posts_path do |f| %>
+  <p>
+    <%= f.label :choice %><br>
+    <%= f.text_field :choice %>
+  </p>
+
+  <p>
+    <%= f.submit %>
+  </p>
+<% end %>
+
+<table border="1">
+<tr>
+  <th>Title</th>
+  <th>Author</th>
+  <th>Text</th>
+  <th>Time</th>
+</tr>
+
+<% @posts.each do |post| %>
+  <tr>
+    <td><%= post.title %></td>
+    <td><%= post.author %></td>
+    <td><%= post.text %></td>
+    <td><%= post.created_at %></td>
+    <td><%= link_to 'Show', post_path(post) %></td>
+    <td><%= link_to 'Edit', edit_post_path(post) %></td>
+  </tr>
+<% end %>
+</table>
